@@ -1,0 +1,209 @@
+version: '3.1'
+services:
+  es00:
+    container_name: es00
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
+    volumes:
+      # - ./elastic.jvm.options:/usr/share/elasticsearch/config/jvm.options
+      # - ./elastic.log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      - ./es00/data:/usr/share/elasticsearch/data
+      - ./es00/logs:/var/log
+    environment:
+      - cluster.name=elastic
+      - node.name=es00
+      - cluster.initial_master_nodes=es00,es01
+      - bootstrap.memory_lock=true
+      # - "discovery.zen.ping.unicast.hosts=es00"
+      - discovery.seed_hosts=es01
+      - "ES_JAVA_OPTS=-Xms1G -Xmx1G"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+      - xpack.security.enabled=false
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: 262144
+        hard: 262144
+    cap_add:
+      - ALL
+    ports:
+      - 9200:9200
+      - 9300:9300
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - elastic
+      # - ingress
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=elastic
+      - cluster.initial_master_nodes=es00,es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1G -Xmx1G"
+      # - "discovery.zen.ping.unicast.hosts=es00"
+      - discovery.seed_hosts=es00
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+      - xpack.security.enabled=false
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: 262144
+        hard: 262144
+    cap_add:
+      - ALL
+    # privileged: true
+    volumes:
+      - ./es01/data:/usr/share/elasticsearch/data
+      - ./es01/logs:/var/log
+    networks:
+      - elastic
+      # - ingress
+    ports:
+      - 9201:9200
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.1.0
+    container_name: kibana
+    environment:
+      SERVER_NAME: localhost
+      ELASTICSEARCH_URL: http://es00:9200/
+    ports:
+      - 5601:5601
+    volumes:
+      - ./kibana/logs:/var/log
+    ulimits:
+      nproc: 262144
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    networks:
+      - elastic
+      # - ingress
+  # auditbeat:
+  #   image: docker.elastic.co/beats/auditbeat:7.0.0
+  #   command: auditbeat -e -strict.perms=false
+  #   user: root
+  #   environment:
+  #     - setup.kibana.host=kibana:5601
+  #     - output.elasticsearch.hosts=["elasticsearch:9200"]
+  #   cap_add: ['AUDIT_CONTROL', 'AUDIT_READ']
+  #   pid: "host"
+  #   volumes:
+  #   #   - ${PWD}/configs/auditbeat.docker.yml:/usr/share/auditbeat/auditbeat.yml
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - elastic
+  # metricbeat:
+  #   image: docker.elastic.co/beats/metricbeat:7.0.0
+  #   # command: --strict.perms=false
+  #   environment:
+  #     - setup.kibana.host=kibana:5601
+  #     - output.elasticsearch.hosts=["elasticsearch:9200"]
+  #   cap_add:
+  #     - AUDIT_CONTROL
+  #     - AUDIT_READ
+  #   volumes:
+  #     # - ${PWD}/configs/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+  #     - /proc:/hostfs/proc:ro
+  #     - /:/hostfs:ro
+  #   networks:
+  #     - elastic
+
+  # heartbeat:
+  #   image: docker.elastic.co/beats/heartbeat:7.0.0
+  #   command: --strict.perms=false
+  #   environment:
+  #     - setup.kibana.host=kibana:5601
+  #     - output.elasticsearch.hosts=["elasticsearch:9200"]
+  #   # volumes:
+  #   #   - ${PWD}/configs/heartbeat.docker.yml:/usr/share/heartbeat/heartbeat.yml
+  #   networks:
+  #     - elastic
+
+  # packetbeat:
+  #   image: docker.elastic.co/beats/packetbeat:7.0.0
+  #   command: --strict.perms=false
+  #   environment:
+  #     - setup.kibana.host=kibana:5601
+  #     - output.elasticsearch.hosts=["elasticsearch:9200"]
+  #   cap_add:
+  #     - NET_RAW
+  #     - NET_ADMIN
+  #   # volumes:
+  #   #   - ${PWD}/configs/packetbeat.docker.yml:/usr/share/packetbeat/packetbeat.yml
+  #   networks:
+  #     - elastic
+
+  # filebeat:
+  #   image: docker.elastic.co/beats/filebeat:7.0.0
+  #   command: --strict.perms=false
+  #   environment:
+  #     - setup.kibana.host=kibana:5601
+  #     - output.elasticsearch.hosts=["elasticsearch:9200"]
+  #   ports:
+  #     - 9000:9000
+  #   volumes:
+  #     # - ${PWD}/configs/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
+  #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - elastic
+  apmserver:
+    container_name: apmserver
+    image: docker.elastic.co/apm/apm-server:7.1.0
+    command: --strict.perms=false
+    ports:
+      - 8200:8200
+      - 8201:8200
+    environment:
+      - apm-server.host=0.0.0.0
+      - setup.kibana.host=kibana:5601
+      - output.elasticsearch.hosts=["es00:9200"]
+    # volumes:
+    #   - ${PWD}/configs/apm-server.yml:/usr/share/apm-server/apm-server.yml
+    networks:
+        - elastic
+  # nginx:
+  #   image: nginx:latest
+  #   ports:
+  #       - 8081:80
+  #   volumes:
+  #       - ${PWD}/nginx-config/:/etc/nginx/conf.d/
+  #   command: /bin/bash -c "nginx -g 'daemon off;'"
+  #   ulimits:
+  #     nproc: 65535
+  #   networks:
+  #     - ingress
+# volumes:
+#   esdata1:
+#   esdata2:
+#   esdata3:
+#   logs:
+
+networks:
+  elastic:
+  # ingress:
+
+# configs:
+#   auditbeat_config:
+#     file: configs/auditbeat.docker.yml
+#   filebeat_config:
+#     file: configs/filebeat.docker.yml
+#   heartbeat_config:
+#     file: configs/heartbeat.docker.yml
+#   metricbeat_config:
+#     file: configs/metricbeat.docker.yml
+#   packetbeat_config:
+#     file: configs/packetbeat.docker.yml

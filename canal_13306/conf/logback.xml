@@ -62,23 +62,28 @@
 	</appender>
 
 	<logger name="com.alibaba.otter.canal.instance" additivity="false">
-		<level value="INFO" />
+		<!-- <level value="INFO" /> -->
+		<level value="TRACE" />
 		<appender-ref ref="CANAL-ROOT" />
 	</logger>
 	<logger name="com.alibaba.otter.canal.deployer" additivity="false">
-		<level value="INFO" />
+		<!-- <level value="INFO" /> -->
+		<level value="TRACE" />
 		<appender-ref ref="CANAL-ROOT" />
 	</logger>
 	<logger name="com.alibaba.otter.canal.meta.FileMixedMetaManager" additivity="false">
-		<level value="INFO" />
+		<!-- <level value="INFO" /> -->
+		<level value="TRACE" />
 		<appender-ref ref="CANAL-META" />
 	</logger>
 	<logger name="com.alibaba.otter.canal.kafka" additivity="false">
-		<level value="INFO" />
+		<!-- <level value="INFO" /> -->
+		<level value="TRACE" />
 		<appender-ref ref="CANAL-ROOT" />
 	</logger>
 
-	<root level="WARN">
+	<!-- <root level="INFO"> -->
+	<root level="TRACE">
 		<appender-ref ref="STDOUT"/>
 		<appender-ref ref="CANAL-ROOT" />
 	</root>

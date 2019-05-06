@@ -28,26 +28,27 @@ services:
     volumes:
       - ./zk1/data:/data
       - ./zk1/datalog:/datalog
-  canal_server:
-    image: canal/canal-server
-    container_name: canal_server
-    ports: 
-      - 11111:11111
-      - 11112:11112
-    depends_on: 
-      - canal_mysql
-    environment: 
-      - canal.instance.master.address=canal_mysql:3306
-      - canal.instance.dbUsername=canal
-      - canal.instance.dbPassword=canal
-      - canal.mq.topic=test_canal_pamirs
-      - canal.instance.filter.regex=pamirs.*
-      - canal.instance.tsdb.enable=true
-      - canal.instance.connectionCharset=UTF-8
-      - canal.instance.gtidon=false
-    volumes: 
-      - ./canal_13306/conf/:/home/admin/canal-server/conf/
-      - ./canal_13306/logs:/home/admin/canal-server/logs
+  # canal_server:
+  #   image: canal/canal-server
+  #   container_name: canal_server
+  #   ports: 
+  #     - 11111:11111
+  #     - 11112:11112
+  #   depends_on: 
+  #     - canal_mysql
+  #     - canal_zk1
+  #   environment: 
+  #     - canal.instance.master.address=canal_mysql:3306
+  #     - canal.instance.dbUsername=canal
+  #     - canal.instance.dbPassword=canal
+  #     - canal.mq.topic=test_canal_pamirs
+  #     - canal.instance.filter.regex=pamirs.*
+  #     - canal.instance.tsdb.enable=true
+  #     - canal.instance.connectionCharset=UTF-8
+  #     - canal.instance.gtidon=false
+  #   volumes: 
+  #     - ./canal_13306/conf/:/home/admin/canal-server/conf/
+  #     - ./canal_13306/logs:/home/admin/canal-server/logs
   # adminer:
   #   image: adminer
   #   restart: always

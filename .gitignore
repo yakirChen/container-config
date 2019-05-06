@@ -2,3 +2,9 @@ mysql_data/
 zk1/
 canal_*/logs
 canal_*/conf/*/h2.mv.db
+elastic*/data
+elastic*/logs
+es*/data
+es*/logs
+rmq/logs
+rmq/store

@@ -1,0 +1,57 @@
+-server
+
+-Xms2g
+-Xmx2g
+
+-XX:+UnlockExperimentalVMOptions
+-XX:+UnlockDiagnosticVMOptions
+-XX:+PrintCommandLineFlags
+-XX:+UseCompressedOops
+-XX:+AlwaysPreTouch
+-XX:+UseNUMA
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:-OmitStackTraceInFastThrow
+-XX:-UseCounterDecay
+
+10-:-XX:+UseG1GC
+# 10-:-XX:+UseGCLogFileRotation
+-XX:ErrorFile=logs/error.log
+-XX:HeapDumpPath=logs.%p.hprof
+
+-Xss1m
+-Djava.awt.headless=true
+-Dfile.encoding=UTF-8
+-Djna.nosys=true
+-Dio.netty.noUnsafe=true
+-Dio.netty.noKeySetOptimization=true
+-Dio.netty.recycler.maxCapacityPerThread=0
+-Des.networkaddress.cache.ttl=60
+-Des.networkaddress.cache.negative.ttl=10
+
+-Dlog4j.shutdownHookEnabled=false
+-Dlog4j2.disable.jmx=true
+
+-Djava.io.tmpdir=${ES_TMPDIR}
+
+# -XX:ReservedCodeCacheSize=256M
+# -XX:MaxMetaspaceSize=256M
+# -XX:MinMetaspaceFreeRatio=60
+# -XX:SoftRefLRUPolicyMSPerMB=50
+# -XX:ParallelGCThreads=8
+# -XX:ConcGCThreads=4
+# -XX:SurvivorRatio=8
+# -XX:MaxGCPauseMillis=1200
+# -XX:InitiatingHeapOccupancyPercent=30
+# -XX:G1NewSizePercent=6
+# -XX:G1ReservePercent=15
+
+# -XcompilationThreads=6
+# -XX:CICompilerCount=6
+#-XX:+BackgroundCompilation=true
+# -XX:CompileThreshold=100
+# -XX:OnStackReplacePercentage=34
+-XX:+TieredCompilation
+
+#9-:-Xlog:gc*,gc+age=trace,safepoint:file=logs/gc.log:utctime,pid,tags:filecount=32,filesize=64m
+9-:-Djava.locale.providers=COMPAT
+10-:-XX:UseAVX=2
