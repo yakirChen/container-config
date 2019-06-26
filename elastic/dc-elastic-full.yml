@@ -2,7 +2,7 @@ version: '3.1'
 services:
   es00:
     container_name: es00
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     volumes:
       # - ./elastic.jvm.options:/usr/share/elasticsearch/config/jvm.options
       # - ./elastic.log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
@@ -39,7 +39,7 @@ services:
       - elastic
       # - ingress
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     container_name: es01
     environment:
       - node.name=es01
@@ -70,7 +70,7 @@ services:
     ports:
       - 9201:9200
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.1.0
+    image: docker.elastic.co/kibana/kibana:7.2.0
     container_name: kibana
     environment:
       SERVER_NAME: localhost
@@ -162,7 +162,7 @@ services:
   #     - elastic
   apmserver:
     container_name: apmserver
-    image: docker.elastic.co/apm/apm-server:7.1.0
+    image: docker.elastic.co/apm/apm-server:7.2.0
     command: --strict.perms=false
     ports:
       - 8200:8200
