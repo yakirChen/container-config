@@ -109,4 +109,3 @@ node.ingest: false
 cluster.remote.connect: false
 ```
 设置了`x-pack`
-
