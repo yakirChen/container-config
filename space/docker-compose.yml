@@ -1,0 +1,73 @@
+version: "3.1"
+services:
+  redis:
+    image: redis
+    container_name: redis
+    ports: 
+      - 6379:6379
+    volumes:
+      - ./redis_data:/data
+    # command: /bin/bash -c "redis-server /data/redis.conf"
+  mysql:
+    image: mysql
+    container_name: mysql
+    ports:
+      - 3306:3306
+    # expose:
+      # - 3306
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: shushi@2019
+    volumes:
+      - ./my.cnf:/etc/mysql/my.cnf
+      - ./mysql_data:/var/lib/mysql
+  postgre:
+    image: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: qweasd
+    ports:
+      - 5432:5432
+  es00:
+    container_name: es00
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./jvm.options:/usr/share/elasticsearch/config/jvm.options
+      - ./es00/data:/usr/share/elasticsearch/data
+      - ./es00/logs:/var/log
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    ports:
+      - 9200:9200
+      - 9300:9300
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  eh:
+    container_name: eh
+    image: mobz/elasticsearch-head:5
+    ports:
+      - 9100:9100
+  zk1:
+    image: zookeeper:3.4.12
+    container_name: zk1
+    restart: always
+    hostname: zk1
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888
+    volumes:
+      - ./zk1/data:/data
+      - ./zk1/datalog:/datalog

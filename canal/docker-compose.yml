@@ -1,6 +1,6 @@
 version: "3.1"
 services:
-  canal_mysql:
+  mysql:
     image: mysql
     container_name: canal_mysql
     ports:
@@ -15,7 +15,7 @@ services:
       - ./canal.my.cnf:/etc/mysql/my.cnf
       - ./mysql_data:/var/lib/mysql
       # - ./mysql_logs:/var/lib/mysql
-  canal_zk1:
+  zk1:
     image: zookeeper
     container_name: canal_zk1
     restart: always

@@ -11,7 +11,7 @@ services:
       - ./rmq/store:/opt/store
     environment:
       JAVA_OPTS: " -Duser.home=/opt"
-      JAVA_OPT_EXT: "-Xms128m -Xmx128m -Xmn128m"
+      JAVA_OPT_EXT: "-server -XX:+UseG1GC -XX:ConcGCThreads=8 -Xms1g -Xmx1g -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=9 -Xloggc:/opt/logs/gc.log"
     networks:
         rmq:
           aliases:
@@ -37,7 +37,6 @@ services:
       rmq:
         aliases:
           - rmqbroker
-
   rmqconsole:
     image: styletang/rocketmq-console-ng
     container_name: rmqconsole

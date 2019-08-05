@@ -6,17 +6,15 @@ services:
     hostname: prometheus
     # restart: always
     volumes:
-      - prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus/config/node_down.yml:/etc/prometheus/node_down.yml
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/node_down.yml:/etc/prometheus/node_down.yml
     ports:
       - "9090:9090"
-    networks:
-      - monitor
   grafana:
     image: grafana/grafana
     container_name: grafana
     ports:
       - 3000:3000
     user: "104"
-    volumes:
-      - grafana:
+    #volumes:
+        #  - grafana:
