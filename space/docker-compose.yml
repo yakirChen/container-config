@@ -33,7 +33,7 @@ services:
       - 5432:5432
   es00:
     container_name: es00
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
     volumes:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./jvm.options:/usr/share/elasticsearch/config/jvm.options
@@ -58,6 +58,10 @@ services:
     image: mobz/elasticsearch-head:5
     ports:
       - 9100:9100
+  cerebro:
+   image: lmenezes/cerebro
+   ports:
+     - 9000:9000
   zk1:
     image: zookeeper:3.4.12
     container_name: zk1

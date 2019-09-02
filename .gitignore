@@ -15,3 +15,4 @@ space/redis_data/
 tidb/data
 tidb/logs
 space/zk1/datalog
+portainer/data/

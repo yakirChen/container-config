@@ -89,6 +89,12 @@ services:
     networks:
       - elastic
       # - ingress
+  cerebro:
+    image: lmenezes/cerebro
+    ports:
+      - 9000:9000
+    networks:
+      - elastic
   # auditbeat:
   #   image: docker.elastic.co/beats/auditbeat:7.3.0
   #   command: auditbeat -e -strict.perms=false

@@ -2,7 +2,7 @@ version: '3.1'
 services:
   es00:
     container_name: es00
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
     volumes:
       - ./es00/data:/usr/share/elasticsearch/data
       - ./es00/logs:/var/log
@@ -35,7 +35,7 @@ services:
     networks:
       - elastic
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
     container_name: es01
     environment:
       - node.name=es01
@@ -63,7 +63,7 @@ services:
     ports:
       - 9201:9200
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.3.0
+    image: docker.elastic.co/kibana/kibana:7.3.1
     container_name: kibana
     environment:
       SERVER_NAME: localhost
@@ -83,7 +83,7 @@ services:
       - elastic
   # apmserver:
   #   container_name: apmserver
-  #   image: docker.elastic.co/apm/apm-server:7.3.0
+  #   image: docker.elastic.co/apm/apm-server:7.3.1
   #   command: --strict.perms=false
   #   ports:
   #     - 8200:8200
