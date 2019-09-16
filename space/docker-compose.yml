@@ -33,10 +33,23 @@ services:
       - 5432:5432
   es00:
     container_name: es00
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    environment:
+      - cluster.name=elastic
+      - node.name=es00
+      - cluster.initial_master_nodes=es00
+      - bootstrap.memory_lock=true
+      - discovery.seed_hosts=es00
+      - node.store.allow_mmap=false  
+      # - "ES_JAVA_OPTS=8-:-Xms1G 8-:-Xmx1G 8-:-XX:+UseG1GC"
+      - "ES_JAVA_OPTS=-Xms1G -Xmx1G -XX:+UseG1GC"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+      - xpack.security.enabled=false
     volumes:
-      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ./jvm.options:/usr/share/elasticsearch/config/jvm.options
+      # - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      # - ./elastic.jvm.options:/usr/share/elasticsearch/config/jvm.options
       - ./es00/data:/usr/share/elasticsearch/data
       - ./es00/logs:/var/log
     ulimits:
@@ -48,11 +61,11 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:9200"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://0.0.0.0:9200"]
+    #   interval: 30s
+    #   timeout: 30s
+    #   retries: 5
   eh:
     container_name: eh
     image: mobz/elasticsearch-head:5
