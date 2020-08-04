@@ -1,0 +1,17 @@
+version: "3.1"
+services:
+  jenkinscd:
+    image: jenkins/jenkins:lts
+    container_name: jenkinscd
+    restart: always
+    environment:
+      - JAVA_OPTS="-Duser.timezone=Asia/Shanghai"
+    ports:
+      - 1666:8080
+      - 50000:50000
+    volumes:
+      - /home/admin/.m2:/var/jenkins_home/.m2
+      - /home/admin/jenkins_cd/settings.xml:/usr/local/settings.xml
+      - /home/admin/jenkins_cd/jenkins_jdk:/usr/local/jenkins_jdk
+      - /etc/localtime:/etc/localtime
+      - /home/admin/jenkins_cd/jenkins_home:/var/jenkins_home

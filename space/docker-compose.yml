@@ -22,18 +22,18 @@ services:
     volumes:
       - ./my.cnf:/etc/mysql/my.cnf
       - ./mysql_data:/var/lib/mysql
-  postgre:
-    image: postgres
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: qweasd
-    ports:
-      - 5432:5432
+  # postgre:
+  #   image: postgres
+  #   volumes:
+  #     - ./pgdata:/var/lib/postgresql/data
+  #   environment:
+  #     POSTGRES_USER: root
+  #     POSTGRES_PASSWORD: qweasd
+  #   ports:
+  #     - 5432:5432
   es00:
     container_name: es00
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
     environment:
       - cluster.name=elastic
       - node.name=es00
@@ -76,7 +76,7 @@ services:
    ports:
      - 9000:9000
   zk1:
-    image: zookeeper:3.4.12
+    image: zookeeper:3.4.14
     container_name: zk1
     restart: always
     hostname: zk1
