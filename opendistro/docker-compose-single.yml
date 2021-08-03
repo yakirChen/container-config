@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   opendistro_0:
-    image: amazon/opendistro-for-elasticsearch:1.9.0
+    image: amazon/opendistro-for-elasticsearch:1.13.2
     container_name: opendistro_0
     environment:
       - cluster.name=opendistro
@@ -27,7 +27,7 @@ services:
     networks:
       - opendistro
   kibana:
-    image: amazon/opendistro-for-elasticsearch-kibana:1.9.0
+    image: amazon/opendistro-for-elasticsearch-kibana:1.13.2
     container_name: opendistro_kibana
     ports:
       - 5601:5601

@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   redis:
-    image: redis
+    image: redis:3.2.12
     container_name: redis
     ports: 
       - 6379:6379
@@ -33,23 +33,20 @@ services:
   #     - 5432:5432
   es00:
     container_name: es00
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1-amd64
     environment:
       - cluster.name=elastic
       - node.name=es00
       - cluster.initial_master_nodes=es00
       - bootstrap.memory_lock=true
       - discovery.seed_hosts=es00
-      - node.store.allow_mmap=false  
-      # - "ES_JAVA_OPTS=8-:-Xms1G 8-:-Xmx1G 8-:-XX:+UseG1GC"
-      - "ES_JAVA_OPTS=-Xms1G -Xmx1G -XX:+UseG1GC"
+      - node.store.allow_mmap=false
+      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=_eth0_
       - xpack.security.enabled=false
     volumes:
-      # - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      # - ./elastic.jvm.options:/usr/share/elasticsearch/config/jvm.options
       - ./es00/data:/usr/share/elasticsearch/data
       - ./es00/logs:/var/log
     ulimits:
@@ -61,20 +58,23 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://0.0.0.0:9200"]
-    #   interval: 30s
-    #   timeout: 30s
-    #   retries: 5
+    networks:
+      - elastic
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:9200"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
   eh:
     container_name: eh
     image: mobz/elasticsearch-head:5
     ports:
       - 9100:9100
   cerebro:
-   image: lmenezes/cerebro
-   ports:
-     - 9000:9000
+    container_name: cerebro
+    image: lmenezes/cerebro
+    ports:
+      - 9000:9000
   zk1:
     image: zookeeper:3.4.14
     container_name: zk1
@@ -88,3 +88,60 @@ services:
     volumes:
       - ./zk1/data:/data
       - ./zk1/datalog:/datalog
+  rmqnamesrv:
+    image: foxiswho/rocketmq:server-4.5.1
+    container_name: rmqnamesrv
+    ports:
+      - 9876:9876
+    volumes:
+      - ./rmq/namesrv_logs:/opt/logs
+      - ./rmq/namesrv_store:/opt/store
+    environment:
+      JAVA_OPT_EXT: "-Duser.home=/opt -Xms1g -Xmx1g"
+    command: ["sh","mqnamesrv"]
+    networks:
+        rmq:
+          aliases:
+            - rmqnamesrv
+  rmqbroker:
+    image: foxiswho/rocketmq:broker-4.5.1
+    container_name: rmqbroker
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ./rmq/broker_logs:/opt/logs
+      - ./rmq/broker_store:/opt/store
+      - ./rmq/brokerconf/broker.conf:/etc/rocketmq/broker.conf
+    environment:
+        NAMESRV_ADDR: "rmqnamesrv:9876"
+        JAVA_OPT_EXT: "-Duser.home=/opt -Xms256m -Xmx256m -Xmn256m"
+    command: ["sh","mqbroker","-c","/etc/rocketmq/broker.conf","-n","rmqnamesrv:9876","autoCreateTopicEnable=true"]
+    depends_on:
+      - rmqnamesrv
+    networks:
+      rmq:
+        aliases:
+          - rmqbroker
+
+  rmqconsole:
+    image: styletang/rocketmq-console-ng
+    container_name: rmqconsole
+    ports:
+      - 8180:8080
+    environment:
+        JAVA_OPTS: "-Drocketmq.namesrv.addr=rmqnamesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - rmqnamesrv
+    networks:
+      rmq:
+        aliases:
+          - rmqconsole
+
+networks:
+  rmq:
+    name: rmq
+    driver: bridge
+  elastic:
+    name: elastic
+    driver: bridge
